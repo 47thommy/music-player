@@ -17,14 +17,19 @@ class MusicCard extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(
                 this.image!,
                 fit: BoxFit.cover,
-                // width: 180,
-                // height: 180,
               ),
-              Text(this.artist!),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0, left: 10.0),
+                child: Text(
+                  this.artist!,
+                  textAlign: TextAlign.start,
+                ),
+              )
             ],
           ),
         ));
@@ -52,14 +57,3 @@ class MusicCardListView extends StatelessWidget {
     );
   }
 }
-
-    // return ListView.builder(
-    //     // scrollDirection: Axis.horizontal,
-    //     shrinkWrap: true,
-    //     scrollDirection: Axis.horizontal,
-    //     itemCount: musicList!.length,
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return ListTile(
-    //           leading: MusicCard(
-    //               musicList![index]['image'], musicList![index]['artist']));
-    //     });

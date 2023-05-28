@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ui/card.dart';
-// import 'ui/horizontal_card_listview.dart';
+import 'home.dart';
 
 void main() => {runApp(MyApp())};
 
@@ -12,7 +12,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Harmony Hub',
-      color: myColor,
+      theme: ThemeData(
+        colorScheme: ColorScheme.dark(
+          primary: Colors.blue,
+          secondary: myColor,
+          background: Colors.black, // set background color here
+        ),
+      ),
       home: MyHomePage(),
     );
   }
@@ -24,20 +30,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Map<String, String>> musicList = [
-    {
-      'image': 'https://source.unsplash.com/800x800/?music',
-      'artist': 'John Doe',
-    },
-    {
-      'image': 'https://source.unsplash.com/800x800/?music',
-      'artist': 'Jane Smith',
-    },
-    {
-      'image': 'https://source.unsplash.com/800x800/?music',
-      'artist': 'Bob Johnson',
-    },
+  int _selectedIndex = 0;
+
+  static List<Widget> _widgetOptions = <Widget>[
+    Home(),
+    Text('discover'),
+    Text('playlist'),
+    Text('profile'),
   ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,29 +51,19 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Harmony Hub"),
       ),
-      body: Column(children: [
-        TextField(
-          decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: "Search Music",
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
-        ),
-        Column(
-          children: [
-            Text(
-              "Perfect For You",
-              textAlign: TextAlign.right,
-            ),
-            Column(children: [
-              // SingleChildScrollView(
-              //   scrollDirection: Axis.horizontal,
-              MusicCardListView(musicList),
-              // ),
-            ])
-          ],
-        ),
-      ]),
+      body: _widgetOptions[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Color.fromARGB(255, 0, 255, 247),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'discover'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.music_note), label: 'playlist'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'profile')
+        ],
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
