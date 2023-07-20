@@ -1,4 +1,4 @@
-package com.example.harmonyhub
+package com.example.zema
 
 import io.flutter.embedding.android.FlutterActivity
 

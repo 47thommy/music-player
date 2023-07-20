@@ -1,69 +1,55 @@
+import 'package:zema/controller/provider/search_provider.dart';
+import 'package:zema/db/model/zema_model.dart';
+import 'package:zema/controller/provider/provider.dart';
+import 'package:zema/view/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'ui/card.dart';
-import 'home.dart';
+import 'package:flutter/services.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:provider/provider.dart';
 
-void main() => {runApp(MyApp())};
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  if (!Hive.isAdapterRegistered(zemaModelAdapter().typeId)) {
+    Hive.registerAdapter(zemaModelAdapter());
+  }
+
+  await Hive.openBox('recentSongNotifier');
+  await Hive.openBox<int>('FavoriteDB');
+  await Hive.openBox<zemaModel>('playlistDb');
+
+  await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.zema.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true,
+      preloadArtwork: true);
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SongModelProvider()),
+        ChangeNotifierProvider(create: (context) => SearchScreenProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
-  // const MyApp({super.key});
-  final Color myColor = Color.fromRGBO(29, 11, 45, 1);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Harmony Hub',
+      title: 'zema',
       theme: ThemeData(
-        colorScheme: ColorScheme.dark(
-          primary: Colors.blue,
-          secondary: myColor,
-          background: Colors.black, // set background color here
-        ),
-      ),
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-
-  static List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    Text('discover'),
-    Text('playlist'),
-    Text('profile'),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Harmony Hub"),
-      ),
-      body: _widgetOptions[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Color.fromARGB(255, 0, 255, 247),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'discover'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.music_note), label: 'playlist'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'profile')
-        ],
-        onTap: _onItemTapped,
-      ),
+          primarySwatch: Colors.blueGrey, fontFamily: 'PoppinsMedium'),
+      home: const SplashScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
